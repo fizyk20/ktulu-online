@@ -1,15 +1,7 @@
 use characters::CharacterType;
 use interface::*;
 use std::collections::HashMap;
-
-/// Enum representing the moment in game.
-/// When the game starts, it's `BeforeStart`. Then it transitions to `Night(0)`, then `Day(1)`,
-/// `Night(1)`, etc.
-pub enum Time {
-    BeforeStart,
-    Day(u8),
-    Night(u8),
-}
+use super::Time;
 
 pub type PlayerId = u8;
 

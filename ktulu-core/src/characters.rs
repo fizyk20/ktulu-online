@@ -1,3 +1,4 @@
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum CharacterType {
     // The citizens
     Sheriff,
@@ -38,6 +39,7 @@ pub enum CharacterType {
     MindEater,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Fraction {
     Citizens,
     Bandits,
