@@ -6,7 +6,7 @@ pub enum CharacterType {
     Pastor,
     GoodGunfighter,
     Drunkard,
-    Guard,
+    Bodyguard,
     TaxCollector,
     Doctor,
     Gambler,
