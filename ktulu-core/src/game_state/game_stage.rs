@@ -12,10 +12,14 @@ pub enum Time {
     Night(u8),
 }
 
+/// Enum representing an activity taking place in a given moment.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Activity {
+    /// A character uses its ability
     Character(CharacterType),
+    /// A fraction wakes up
     FractionWake(Fraction),
+    /// A fraction goes to sleep
     FractionSleep(Fraction),
 }
 
@@ -60,6 +64,8 @@ const NIGHT_SEQUENCE: [Activity; 27] = [Activity::Character(CharacterType::Sheri
                                         Activity::Character(CharacterType::GreatAlien),
                                         Activity::FractionSleep(Fraction::Aliens)];
 
+/// Structure representing the current state in the game - which day/night it is and what is
+/// happening at the moment.
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct GameStage {
     time: Time,
@@ -67,6 +73,7 @@ pub struct GameStage {
 }
 
 impl GameStage {
+    /// Creates a new `GameStage` that describes a moment just before the start of the game
     pub fn new() -> GameStage {
         GameStage {
             time: Time::BeforeStart,
@@ -82,14 +89,17 @@ impl GameStage {
         }
     }
 
+    /// Returns the time component (which day or night is it)
     pub fn time(&self) -> Time {
         self.time
     }
 
+    /// Returns the current activity
     pub fn activity(&self) -> Option<Activity> {
         self.activity
     }
 
+    /// Advances the stage to the next one.
     pub fn advance(&mut self) {
         match self.time {
             Time::BeforeStart => {
