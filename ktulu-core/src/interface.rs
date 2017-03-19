@@ -1,9 +1,9 @@
-/// This will be a trait implemented by all character structs and by their proxies
-pub trait CharacterTrait {
-    fn new() -> Self;
-}
+use PlayerId;
 
-/// This will be a trait implemented by GameState and GameStateProxy
-pub trait ManitouTrait {
-    fn new() -> Self;
+/// This is a trait for objects that will allow Manitou to perform RPCs on the characters.
+pub trait CharacterClient {}
+
+/// This is a trait for objects that will allow characters to perform RPCs on the Manitou.
+pub trait ManitouClient {
+    fn connect(&mut self) -> PlayerId;
 }
