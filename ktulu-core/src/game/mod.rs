@@ -1,5 +1,5 @@
-mod character;
-mod manitou;
+mod client;
+mod server;
 
-pub use self::character::Character;
-pub use self::manitou::Manitou;
+pub use self::client::KtuluClient;
+pub use self::server::KtuluServer;

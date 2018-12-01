@@ -1,9 +1,11 @@
-use PlayerId;
+use messages::KtuluMessage;
 
-/// This is a trait for objects that will allow Manitou to perform RPCs on the characters.
-pub trait CharacterClient {}
+pub trait KtuluMessageHandler {
+    type Endpoint;
 
-/// This is a trait for objects that will allow characters to perform RPCs on the Manitou.
-pub trait ManitouClient {
-    fn connect(&mut self) -> PlayerId;
+    fn handle_message(
+        &mut self,
+        sender: Self::Endpoint,
+        message: KtuluMessage,
+    ) -> Vec<(Self::Endpoint, KtuluMessage)>;
 }
