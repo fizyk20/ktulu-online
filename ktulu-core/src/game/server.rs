@@ -1,5 +1,6 @@
+use error::*;
 use game_state::*;
-use interface::KtuluMessageHandler;
+use interface::*;
 use messages::*;
 use std::collections::HashMap;
 use std::hash::Hash;
@@ -31,20 +32,20 @@ impl<Endpoint: Hash + Eq + Clone> KtuluServer<Endpoint> {
         &mut self,
         sender: Endpoint,
         nick: String,
-    ) -> Vec<KtuluMessage<Endpoint>> {
+    ) -> Result<Vec<KtuluMessage<Endpoint>>> {
         if self.game_state.stage().time() != Time::BeforeStart {
             let response = KtuluMessage {
                 recipient: sender,
                 packet: KtuluPacket::Server(ServerMsg::Rejected(RejectionReason::GameInProgress)),
             };
-            return vec![response];
+            return Ok(vec![response]);
         }
         if self.id_endpoint_map.len() >= MAX_PLAYERS {
             let response = KtuluMessage {
                 recipient: sender,
                 packet: KtuluPacket::Server(ServerMsg::Rejected(RejectionReason::ServerFull)),
             };
-            return vec![response];
+            return Ok(vec![response]);
         }
         let new_id = self.id_endpoint_map.len() as PlayerId;
         let _ = self.id_endpoint_map.insert(new_id, sender.clone());
@@ -69,7 +70,7 @@ impl<Endpoint: Hash + Eq + Clone> KtuluServer<Endpoint> {
             output_msgs.push(msg);
         }
 
-        output_msgs
+        Ok(output_msgs)
     }
 }
 
@@ -80,15 +81,12 @@ impl<Endpoint: Hash + Eq + Clone> KtuluMessageHandler for KtuluServer<Endpoint> 
         &mut self,
         sender: Endpoint,
         packet: KtuluPacket,
-    ) -> Vec<KtuluMessage<Endpoint>> {
+    ) -> Result<Vec<KtuluMessage<Endpoint>>> {
         match packet {
-            KtuluPacket::Server(_) => {
-                //TODO log some kind of error
-                vec![]
-            }
+            KtuluPacket::Server(_) => Err(KtuluError::InvalidMessageSource),
             KtuluPacket::Client(msg) => match msg {
                 ClientMsg::Connect { nick } => self.handle_connect(sender, nick),
-                _ => vec![],
+                _ => Ok(vec![]),
             },
         }
     }

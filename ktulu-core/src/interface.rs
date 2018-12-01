@@ -1,4 +1,7 @@
+use error::KtuluError;
 use messages::{KtuluMessage, KtuluPacket};
+
+pub type Result<T> = ::std::result::Result<T, KtuluError>;
 
 pub trait KtuluMessageHandler {
     type Endpoint;
@@ -7,5 +10,5 @@ pub trait KtuluMessageHandler {
         &mut self,
         sender: Self::Endpoint,
         packet: KtuluPacket,
-    ) -> Vec<KtuluMessage<Self::Endpoint>>;
+    ) -> Result<Vec<KtuluMessage<Self::Endpoint>>>;
 }

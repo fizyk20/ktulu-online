@@ -81,7 +81,10 @@ impl TestEnvironment {
                 packet,
             } = self.packet_queue.pop_front().unwrap();
             // handle the packet from the front of the queue
-            let new_messages = self.get_handler(recipient).handle_message(sender, packet);
+            let new_messages = self
+                .get_handler(recipient)
+                .handle_message(sender, packet)
+                .unwrap();
             // send all responses from the recipient
             for KtuluMessage {
                 recipient: to,

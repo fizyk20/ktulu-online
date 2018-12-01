@@ -20,4 +20,11 @@ fn test_game_flow() {
     env.handle_all_messages();
 
     assert!(env.manitou().can_start());
+
+    let reference_players = env.character(0).players().unwrap().clone();
+    assert_eq!(reference_players.len(), 15);
+
+    for (_, character) in env.characters() {
+        assert_eq!(*character.players().unwrap(), reference_players);
+    }
 }
