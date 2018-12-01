@@ -8,26 +8,36 @@ fn test_initial_game_stages() {
     assert_eq!(stage.activity(), None);
     stage.advance();
     assert_eq!(stage.time(), Time::Night(0));
-    assert_eq!(stage.activity(),
-               Some(Activity::Character(CharacterType::Prostitute)));
+    assert_eq!(
+        stage.activity(),
+        Some(Activity::Character(CharacterType::Prostitute))
+    );
     stage.advance();
     assert_eq!(stage.time(), Time::Night(0));
-    assert_eq!(stage.activity(),
-               Some(Activity::Character(CharacterType::Pastor)));
+    assert_eq!(
+        stage.activity(),
+        Some(Activity::Character(CharacterType::Pastor))
+    );
     stage.advance();
     assert_eq!(stage.time(), Time::Night(0));
-    assert_eq!(stage.activity(),
-               Some(Activity::Character(CharacterType::Seducer)));
+    assert_eq!(
+        stage.activity(),
+        Some(Activity::Character(CharacterType::Seducer))
+    );
     stage.advance();
     assert_eq!(stage.time(), Time::Night(0));
-    assert_eq!(stage.activity(),
-               Some(Activity::Character(CharacterType::Sheriff)));
+    assert_eq!(
+        stage.activity(),
+        Some(Activity::Character(CharacterType::Sheriff))
+    );
 }
 
 #[test]
 fn test_end_night0() {
-    let mut stage = GameStage::new_with_data(Time::Night(0),
-                                             Some(Activity::FractionSleep(Fraction::Aliens)));
+    let mut stage = GameStage::new_with_data(
+        Time::Night(0),
+        Some(Activity::FractionSleep(Fraction::Aliens)),
+    );
     stage.advance();
     assert_eq!(stage.time(), Time::Day(1));
     assert_eq!(stage.activity(), None);
@@ -35,17 +45,22 @@ fn test_end_night0() {
 
 #[test]
 fn test_end_night() {
-    let mut stage =
-        GameStage::new_with_data(Time::Night(2),
-                                 Some(Activity::Character(CharacterType::GreenTentacle)));
+    let mut stage = GameStage::new_with_data(
+        Time::Night(2),
+        Some(Activity::Character(CharacterType::GreenTentacle)),
+    );
     stage.advance();
     assert_eq!(stage.time(), Time::Night(2));
-    assert_eq!(stage.activity(),
-               Some(Activity::Character(CharacterType::GreatAlien)));
+    assert_eq!(
+        stage.activity(),
+        Some(Activity::Character(CharacterType::GreatAlien))
+    );
     stage.advance();
     assert_eq!(stage.time(), Time::Night(2));
-    assert_eq!(stage.activity(),
-               Some(Activity::FractionSleep(Fraction::Aliens)));
+    assert_eq!(
+        stage.activity(),
+        Some(Activity::FractionSleep(Fraction::Aliens))
+    );
     stage.advance();
     assert_eq!(stage.time(), Time::Day(3));
     assert_eq!(stage.activity(), None);
@@ -62,8 +77,10 @@ fn test_end_day() {
     assert_eq!(stage.activity(), None);
     stage.advance();
     assert_eq!(stage.time(), Time::Night(3));
-    assert_eq!(stage.activity(),
-               Some(Activity::Character(CharacterType::Sheriff)));
+    assert_eq!(
+        stage.activity(),
+        Some(Activity::Character(CharacterType::Sheriff))
+    );
 }
 
 #[test]
@@ -76,7 +93,9 @@ fn test_invalid_stage_night() {
 #[test]
 #[should_panic]
 fn test_invalid_stage_day() {
-    let mut stage = GameStage::new_with_data(Time::Day(1),
-                                             Some(Activity::FractionWake(Fraction::Citizens)));
+    let mut stage = GameStage::new_with_data(
+        Time::Day(1),
+        Some(Activity::FractionWake(Fraction::Citizens)),
+    );
     stage.advance();
 }

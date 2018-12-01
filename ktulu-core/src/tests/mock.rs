@@ -1,9 +1,9 @@
-use PlayerId;
 use game::{Character, Manitou};
 use interface::*;
 use std::cell::RefCell;
 use std::ops::Deref;
 use std::rc::Rc;
+use PlayerId;
 
 pub struct TestEnvironmentImpl {
     manitou: Manitou<TestClient>,

@@ -1,7 +1,7 @@
-use PlayerId;
 use characters::CharacterType;
 use interface::CharacterClient;
 use std::collections::HashMap;
+use PlayerId;
 
 const MIN_PLAYERS: usize = 12;
 

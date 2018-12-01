@@ -1,6 +1,6 @@
-use PlayerId;
 use characters::CharacterType;
 use interface::ManitouClient;
+use PlayerId;
 
 pub struct Character<Manitou: ManitouClient> {
     manitou: Manitou,
