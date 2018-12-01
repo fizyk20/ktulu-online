@@ -1,6 +1,8 @@
-use game_state::GameState;
+use game_state::*;
 use interface::KtuluMessageHandler;
-use messages::{ClientMsg, KtuluMessage, KtuluPacket};
+use messages::*;
+use std::collections::HashMap;
+use PlayerId;
 
 pub struct KtuluClient<Endpoint: Clone> {
     manitou: Endpoint,
@@ -25,6 +27,15 @@ impl<Endpoint: Clone> KtuluClient<Endpoint> {
             }),
         }
     }
+
+    fn handle_accept_response(
+        &mut self,
+        our_id: PlayerId,
+        players: HashMap<PlayerId, Player>,
+    ) -> Vec<KtuluMessage<Endpoint>> {
+        self.game_state = Some(GameState::new_player(our_id, players));
+        vec![]
+    }
 }
 
 impl<Endpoint: Clone> KtuluMessageHandler for KtuluClient<Endpoint> {
@@ -35,6 +46,17 @@ impl<Endpoint: Clone> KtuluMessageHandler for KtuluClient<Endpoint> {
         sender: Endpoint,
         packet: KtuluPacket,
     ) -> Vec<KtuluMessage<Endpoint>> {
-        vec![]
+        match packet {
+            KtuluPacket::Client(_) => {
+                // TODO log some kind of error
+                vec![]
+            }
+            KtuluPacket::Server(msg) => match msg {
+                ServerMsg::Accepted(AcceptedResponse { id, players }) => {
+                    self.handle_accept_response(id, players)
+                }
+                _ => vec![],
+            },
+        }
     }
 }

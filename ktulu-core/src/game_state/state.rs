@@ -24,11 +24,23 @@ impl GameState {
         }
     }
 
-    pub fn new_player(id: PlayerId) -> Self {
+    pub fn new_player(id: PlayerId, players: HashMap<PlayerId, Player>) -> Self {
         Self {
             us: GameEntity::Player(id),
-            players: HashMap::new(),
+            players,
             stage: GameStage::new(),
         }
+    }
+
+    pub fn stage(&self) -> GameStage {
+        self.stage
+    }
+
+    pub fn players(&self) -> &HashMap<PlayerId, Player> {
+        &self.players
+    }
+
+    pub fn add_player(&mut self, player: Player) {
+        let _ = self.players.insert(player.player_id(), player);
     }
 }

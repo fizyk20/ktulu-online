@@ -18,4 +18,6 @@ fn test_game_flow() {
     }
 
     env.handle_all_messages();
+
+    assert!(env.manitou().can_start());
 }

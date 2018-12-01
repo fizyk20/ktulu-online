@@ -18,6 +18,6 @@ pub enum RejectionReason {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AcceptedResponse {
-    id: PlayerId,
-    players: HashMap<PlayerId, Player>,
+    pub id: PlayerId,
+    pub players: HashMap<PlayerId, Player>,
 }
