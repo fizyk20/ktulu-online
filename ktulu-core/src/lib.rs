@@ -1,3 +1,7 @@
+extern crate serde;
+#[macro_use]
+extern crate serde_derive;
+
 pub mod characters;
 pub mod game;
 pub mod game_state;
