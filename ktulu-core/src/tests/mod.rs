@@ -1,11 +1,21 @@
 mod mock;
 use self::mock::*;
+use messages::KtuluMessage;
 
 #[test]
 fn test_game_flow() {
-    let env = TestEnvironment::new();
-    for _ in 0..15 {
-        env.add_player();
+    let mut env = TestEnvironment::new();
+    for nick in &NAMES[..15] {
+        env.add_player(nick.to_string());
     }
-    assert!(env.borrow().manitou().can_start());
+
+    let connect_msgs: Vec<_> = env
+        .characters()
+        .map(|(sender, ch)| (sender, ch.connect()))
+        .collect();
+    for (sender, KtuluMessage { recipient, packet }) in connect_msgs {
+        env.send_message(sender, recipient, packet);
+    }
+
+    env.handle_all_messages();
 }

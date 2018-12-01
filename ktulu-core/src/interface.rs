@@ -1,4 +1,4 @@
-use messages::KtuluMessage;
+use messages::{KtuluMessage, KtuluPacket};
 
 pub trait KtuluMessageHandler {
     type Endpoint;
@@ -6,6 +6,6 @@ pub trait KtuluMessageHandler {
     fn handle_message(
         &mut self,
         sender: Self::Endpoint,
-        message: KtuluMessage,
-    ) -> Vec<(Self::Endpoint, KtuluMessage)>;
+        packet: KtuluPacket,
+    ) -> Vec<KtuluMessage<Self::Endpoint>>;
 }

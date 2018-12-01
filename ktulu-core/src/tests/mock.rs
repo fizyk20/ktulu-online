@@ -1,69 +1,95 @@
-use game::{Character, Manitou};
+use game::{KtuluClient, KtuluServer};
 use interface::*;
-use std::cell::RefCell;
-use std::ops::Deref;
-use std::rc::Rc;
+use messages::{KtuluMessage, KtuluPacket};
+use std::collections::VecDeque;
 use PlayerId;
 
-pub struct TestEnvironmentImpl {
-    manitou: Manitou<TestClient>,
-    characters: Vec<Character<TestClient>>,
+pub const NAMES: &[&str] = &[
+    "Alice", "Bob", "Carol", "Dave", "Eric", "Fred", "Gina", "Hank", "Iris", "Judy", "Kent",
+    "Lucy", "Mike", "Nina", "Oran", "Paul", "Quin", "Rose", "Stan", "Tina",
+];
+
+type MockEndpoint = Option<usize>;
+
+struct Packet {
+    sender: MockEndpoint,
+    recipient: MockEndpoint,
+    packet: KtuluPacket,
 }
 
-impl TestEnvironmentImpl {
-    pub fn manitou(&self) -> &Manitou<TestClient> {
-        &self.manitou
-    }
-
-    pub fn character(&self, i: usize) -> &Character<TestClient> {
-        &self.characters[i]
-    }
+pub struct TestEnvironment {
+    manitou: KtuluServer<MockEndpoint>,
+    characters: Vec<KtuluClient<MockEndpoint>>,
+    packet_queue: VecDeque<Packet>,
 }
-
-pub struct TestEnvironment(Rc<RefCell<TestEnvironmentImpl>>);
-
-impl Deref for TestEnvironment {
-    type Target = RefCell<TestEnvironmentImpl>;
-    fn deref(&self) -> &RefCell<TestEnvironmentImpl> {
-        &self.0
-    }
-}
-
-pub struct TestClient {
-    char_index: usize,
-    env: Rc<RefCell<TestEnvironmentImpl>>,
-}
-
-impl ManitouClient for TestClient {
-    fn connect(&mut self) -> PlayerId {
-        let character = TestClient {
-            char_index: self.char_index,
-            env: self.env.clone(),
-        };
-        self.env.borrow_mut().manitou.connect(character)
-    }
-}
-
-impl CharacterClient for TestClient {}
 
 impl TestEnvironment {
-    pub fn new() -> TestEnvironment {
-        TestEnvironment(Rc::new(RefCell::new(TestEnvironmentImpl {
-            manitou: Manitou::new(),
-            characters: Vec::new(),
-        })))
+    pub fn manitou(&mut self) -> &mut KtuluServer<MockEndpoint> {
+        &mut self.manitou
     }
 
-    fn get_test_client(&self, char_index: usize) -> TestClient {
-        TestClient {
-            char_index: char_index,
-            env: self.0.clone(),
+    pub fn character(&mut self, i: usize) -> &mut KtuluClient<MockEndpoint> {
+        &mut self.characters[i]
+    }
+
+    pub fn characters(
+        &mut self,
+    ) -> impl Iterator<Item = (MockEndpoint, &mut KtuluClient<MockEndpoint>)> {
+        self.characters
+            .iter_mut()
+            .enumerate()
+            .map(|(i, ch)| (Some(i), ch))
+    }
+
+    pub fn new() -> TestEnvironment {
+        TestEnvironment {
+            manitou: KtuluServer::new(),
+            characters: Vec::new(),
+            packet_queue: VecDeque::new(),
         }
     }
 
-    pub fn add_player(&self) {
-        let new_index = self.0.borrow().characters.len();
-        let player = Character::new(self.get_test_client(new_index));
-        self.0.borrow_mut().characters.push(player);
+    pub fn add_player(&mut self, nick: String) {
+        let new_client = KtuluClient::new(nick, None);
+        self.characters.push(new_client);
+    }
+
+    pub fn send_message(&mut self, from: MockEndpoint, to: MockEndpoint, packet: KtuluPacket) {
+        self.packet_queue.push_back(Packet {
+            sender: from,
+            recipient: to,
+            packet,
+        });
+    }
+
+    fn get_handler(
+        &mut self,
+        endpoint: MockEndpoint,
+    ) -> &mut KtuluMessageHandler<Endpoint = MockEndpoint> {
+        if let Some(index) = endpoint {
+            &mut self.characters[index]
+        } else {
+            &mut self.manitou
+        }
+    }
+
+    pub fn handle_all_messages(&mut self) {
+        while !self.packet_queue.is_empty() {
+            let Packet {
+                sender,
+                recipient,
+                packet,
+            } = self.packet_queue.pop_front().unwrap();
+            // handle the packet from the front of the queue
+            let new_messages = self.get_handler(recipient).handle_message(sender, packet);
+            // send all responses from the recipient
+            for KtuluMessage {
+                recipient: to,
+                packet,
+            } in new_messages
+            {
+                self.send_message(recipient, to, packet);
+            }
+        }
     }
 }

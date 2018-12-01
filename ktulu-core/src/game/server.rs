@@ -1,6 +1,6 @@
 use game_state::GameState;
 use interface::KtuluMessageHandler;
-use messages::KtuluMessage;
+use messages::{KtuluMessage, KtuluPacket};
 use std::collections::HashMap;
 use std::hash::Hash;
 use PlayerId;
@@ -27,8 +27,8 @@ impl<Endpoint: Hash + Eq> KtuluMessageHandler for KtuluServer<Endpoint> {
     fn handle_message(
         &mut self,
         sender: Endpoint,
-        message: KtuluMessage,
-    ) -> Vec<(Endpoint, KtuluMessage)> {
+        packet: KtuluPacket,
+    ) -> Vec<KtuluMessage<Endpoint>> {
         vec![]
     }
 }
