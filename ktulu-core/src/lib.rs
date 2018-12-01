@@ -6,6 +6,7 @@ pub mod characters;
 pub mod game;
 pub mod game_state;
 pub mod interface;
+pub mod messages;
 #[cfg(test)]
 mod tests;
 
